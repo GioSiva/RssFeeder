@@ -1,0 +1,20 @@
+id: bdnovidadesmanga
+title: Bandas Desenhadas — Novidades Manga
+site_url: https://giosiva.github.io/RssFeeder
+page_url: https://www.bandasdesenhadas.pt/search/label/NOVIDADES%20MANGA
+description: >-
+  Novidades manga do BandasDesenhadas.pt (etiqueta NOVIDADES MANGA).
+  Importado do feed Atom oficial do Blogger (com imagens simples no RSS).
+source_feed_url: https://www.bandasdesenhadas.pt/feeds/posts/default/-/NOVIDADES%20MANGA?max-results=100
+# Listagem HTML (no browser fica dentro de .theiaStickySidebar; no HTML inicial é #Blog1):
+list_selector: "#Blog1 .blog-posts .blog-post.index-post"
+item_title_selector: "h2.post-title a"
+item_link_selector: "h2.post-title a"
+item_author_selector: ""
+item_date_selector: ".post-meta .post-date"
+item_date_attribute: datetime
+item_image_selector: ".post-image-wrap img.post-thumb"
+item_comments_selector: ""
+max_pages: 1
+item_sort: date
+language: pt

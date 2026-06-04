@@ -227,5 +227,45 @@ class TheVergeFeedTests(unittest.TestCase):
         self.assertNotIn("<figure>", item.description_html)
 
 
+class BdNovidadesMangaFeedTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.config = load_preset("bdnovidadesmanga")
+
+    def test_import_blogger_atom_fixture(self) -> None:
+        from unittest.mock import Mock, patch
+
+        import rssfeeder.feed_import as feed_import
+
+        fixture = (
+            Path(__file__).parent / "fixtures" / "bdnovidadesmanga_atom_snippet.xml"
+        ).read_text(encoding="utf-8")
+        response = Mock()
+        response.content = fixture.encode("utf-8")
+        response.raise_for_status = Mock()
+
+        with patch.object(feed_import.requests, "get", return_value=response):
+            items = feed_import.import_feed_items(self.config)
+
+        self.assertEqual(len(items), 1)
+        item = items[0]
+        self.assertEqual(item.title, "Teste Novidades Manga")
+        self.assertEqual(item.category, "NOVIDADES MANGA")
+        self.assertIn("blogger.googleusercontent.com", item.image_url or "")
+        self.assertIn('<p><img src="https://blogger.googleusercontent.com', item.description_html)
+
+    def test_html_listing_fixture(self) -> None:
+        fixture = (
+            Path(__file__).parent / "fixtures" / "bdnovidadesmanga_listing_snippet.html"
+        ).read_text(encoding="utf-8")
+        html_config = replace(self.config, source_feed_url="")
+        items = scrape_items(
+            html_config,
+            html=f'<html><body><div id="Blog1">{fixture}</div></body></html>',
+        )
+        self.assertGreaterEqual(len(items), 2)
+        self.assertIn("Presença", items[0].title)
+        self.assertIn("blogger.googleusercontent.com", items[0].image_url or "")
+
+
 if __name__ == "__main__":
     unittest.main()

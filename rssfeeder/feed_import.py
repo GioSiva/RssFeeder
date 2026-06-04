@@ -79,6 +79,15 @@ def _local_name(tag: str) -> str:
     return tag
 
 
+def _pick_atom_category(categories: list[str]) -> Optional[str]:
+    if not categories:
+        return None
+    for term in categories:
+        if term.strip().upper() == "NOVIDADES MANGA":
+            return term
+    return categories[0]
+
+
 def _atom_text(parent: ET.Element, name: str) -> str:
     for child in parent:
         if _local_name(child.tag) == name:
@@ -116,13 +125,15 @@ def _parse_atom_entry(entry: ET.Element, config: FeedConfig) -> Optional[FeedIte
         if _local_name(child.tag) == "author":
             author = _atom_text(child, "name")
             break
+    if author and author.strip().lower() == "unknown":
+        author = ""
 
     categories = [
         child.get("term", "").strip()
         for child in entry
         if _local_name(child.tag) == "category" and child.get("term")
     ]
-    category = categories[0] if categories else None
+    category = _pick_atom_category(categories)
 
     content_html = _atom_content_html(entry)
 

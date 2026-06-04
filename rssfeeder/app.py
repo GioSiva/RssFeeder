@@ -50,6 +50,7 @@ def create_app() -> Flask:
                     "mushureport": f"{_site_base_url()}/feed/mushureport.xml",
                     "pcguia": f"{_site_base_url()}/feed/pcguia.xml",
                     "theverge": f"{_site_base_url()}/feed/theverge.xml",
+                    "bdnovidadesmanga": f"{_site_base_url()}/feed/bdnovidadesmanga.xml",
                 },
             }
         )

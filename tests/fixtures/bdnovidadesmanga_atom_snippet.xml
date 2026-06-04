@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Bandas Desenhadas</title>
+  <entry>
+    <title>Teste Novidades Manga</title>
+    <link rel="alternate" href="https://www.bandasdesenhadas.pt/2026/05/teste.html" />
+    <id>tag:blogger.com,1999:blog-8980950511407461083.post-1</id>
+    <published>2026-05-29T12:00:00+01:00</published>
+    <category term="MANGA" />
+    <category term="NOVIDADES MANGA" />
+    <content type="html">
+      <![CDATA[<div><img src="https://blogger.googleusercontent.com/img/b/test/s320/cover.jpg" /></div>]]>
+    </content>
+  </entry>
+</feed>
