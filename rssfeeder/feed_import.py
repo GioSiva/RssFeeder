@@ -31,14 +31,8 @@ def _plain_text(value: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _first_image_from_html(fragment: str, base_url: str) -> Optional[str]:
-    if not fragment or "<img" not in fragment:
-        return None
-    soup = BeautifulSoup(fragment, "lxml")
-    img = soup.select_one("img[src]")
-    if img is None:
-        return None
-    src = img.get("src", "").strip()
+def _normalize_url(raw: str, base_url: str) -> Optional[str]:
+    src = html.unescape(raw.strip())
     if not src or src.startswith("data:"):
         return None
     if src.startswith("//"):
@@ -48,6 +42,35 @@ def _first_image_from_html(fragment: str, base_url: str) -> Optional[str]:
 
         return urljoin(base_url, src)
     return src
+
+
+def _first_image_from_html(fragment: str, base_url: str) -> Optional[str]:
+    if not fragment or "<img" not in fragment:
+        return None
+    soup = BeautifulSoup(fragment, "lxml")
+    for img in soup.select("img[src], img[data-src]"):
+        for attr in ("src", "data-src"):
+            url = _normalize_url(img.get(attr, ""), base_url)
+            if url:
+                return url
+    return None
+
+
+def _atom_content_html(entry: ET.Element) -> str:
+    """Prefer full HTML content over short summary (The Verge puts images only in content)."""
+    content_html = ""
+    summary_html = ""
+    for child in entry:
+        name = _local_name(child.tag)
+        if name == "content":
+            content_html = (child.text or "").strip()
+        elif name == "summary":
+            summary_html = (child.text or "").strip()
+    if content_html and "<img" in content_html:
+        return content_html
+    if content_html:
+        return content_html
+    return summary_html
 
 
 def _local_name(tag: str) -> str:
@@ -101,16 +124,16 @@ def _parse_atom_entry(entry: ET.Element, config: FeedConfig) -> Optional[FeedIte
     ]
     category = categories[0] if categories else None
 
-    content_html = ""
-    for child in entry:
-        if _local_name(child.tag) in ("content", "summary"):
-            content_html = child.text or ""
-            if content_html:
-                break
+    content_html = _atom_content_html(entry)
 
     guid = _atom_text(entry, "id") or link
     image_url = _first_image_from_html(content_html, config.page_url)
-    description_html = content_html or _item_description(title, author or None, image_url, category)
+    if content_html:
+        description_html = content_html
+        if image_url and "<img" not in content_html.lower():
+            description_html = _item_description(title, author or None, image_url, category) + content_html
+    else:
+        description_html = _item_description(title, author or None, image_url, category)
 
     return FeedItem(
         guid=guid,
