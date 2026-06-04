@@ -195,21 +195,31 @@ def _article_key(article: Tag, link: str) -> str:
     return link
 
 
-def scrape_items(config: FeedConfig, *, html: Optional[str] = None) -> list[FeedItem]:
-    if html is None:
-        response = requests.get(
-            config.page_url,
-            headers={"User-Agent": config.user_agent},
-            timeout=30,
-        )
-        response.raise_for_status()
-        html = response.text
+def _fetch_html(url: str, config: FeedConfig) -> str:
+    response = requests.get(
+        url,
+        headers={"User-Agent": config.user_agent},
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.text
 
+
+def _listing_urls(config: FeedConfig) -> list[str]:
+    if config.max_pages <= 1:
+        return [config.page_url]
+    base = config.page_url.split("?", 1)[0]
+    return [config.page_url] + [f"{base}?page={page}" for page in range(2, config.max_pages + 1)]
+
+
+def _scrape_page_html(
+    config: FeedConfig,
+    html: str,
+    items: list[FeedItem],
+    seen: set[str],
+) -> None:
     soup = BeautifulSoup(html, "lxml")
     articles = soup.select(config.list_selector)
-
-    items: list[FeedItem] = []
-    seen: set[str] = set()
 
     for article in articles:
         if not isinstance(article, Tag):
@@ -261,4 +271,16 @@ def scrape_items(config: FeedConfig, *, html: Optional[str] = None) -> list[Feed
             )
         )
 
+
+def scrape_items(config: FeedConfig, *, html: Optional[str] = None) -> list[FeedItem]:
+    items: list[FeedItem] = []
+    seen: set[str] = set()
+
+    if html is not None:
+        _scrape_page_html(config, html, items, seen)
+    else:
+        for url in _listing_urls(config):
+            _scrape_page_html(config, _fetch_html(url, config), items, seen)
+
+    items.sort(key=lambda item: item.published, reverse=True)
     return items

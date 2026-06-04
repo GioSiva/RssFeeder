@@ -26,6 +26,7 @@ class FeedConfig:
     item_image_selector: str = ".xpress_articleImage--full img"
     item_comments_selector: str = '.entry-meta a[href*="#comments"]'
     item_date_attribute: str = ""
+    max_pages: int = 1
     user_agent: str = "RssFeeder/1.0 (+https://github.com/GioSiva/RssFeeder)"
     language: str = "en"
 
