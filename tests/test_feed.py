@@ -134,13 +134,21 @@ class PcguiaFeedTests(unittest.TestCase):
                 "categories": [26],
                 "_embedded": {"author": [{"name": "Redação"}], "wp:featuredmedia": []},
             },
-            99: {
-                "id": 99,
-                "date": "2026-06-03T16:30:26",
-                "link": "https://www.pcguia.pt/2026/06/asus-lanca-fonte-de-alimentacao-de-3000-w-capaz-de-alimentar-quatro-rtx-5090/",
-                "title": {"rendered": "Asus lança fonte de alimentação de 3000 W"},
+            101: {
+                "id": 101,
+                "date": "2026-06-04T10:00:00",
+                "link": "https://www.pcguia.pt/2026/06/china-embrioes/",
+                "title": {"rendered": "China envia embriões"},
                 "categories": [26],
-                "_embedded": {"author": [{"name": "João"}], "wp:featuredmedia": []},
+                "_embedded": {"author": [{"name": "Redação"}], "wp:featuredmedia": []},
+            },
+            102: {
+                "id": 102,
+                "date": "2026-06-04T09:00:00",
+                "link": "https://www.pcguia.pt/2026/06/asrock-taichi/",
+                "title": {"rendered": "ASRock celebra Taichi"},
+                "categories": [26],
+                "_embedded": {"author": [{"name": "Redação"}], "wp:featuredmedia": []},
             },
         }
 
@@ -150,17 +158,25 @@ class PcguiaFeedTests(unittest.TestCase):
         with patch.object(section_scrape, "_fetch_posts_by_ids", side_effect=fake_fetch):
             items = scrape_items(self.config, html=html)
 
-        self.assertEqual(len(items), 2)
+        self.assertEqual(len(items), 3)
         self.assertEqual(items[0].title, "NZXT aposta forte")
-        self.assertIn("Asus lança fonte", items[1].title)
-        self.assertIn("nzxt.jpg", items[0].image_url or "")
+        self.assertEqual(items[1].title, "China envia embriões")
+        self.assertEqual(items[2].title, "ASRock celebra Taichi")
+        titles = [item.title for item in items]
+        self.assertNotIn("App do Dia", titles)
+        self.assertNotIn("Denon Home 200", titles)
 
     def test_wp_json_fixture(self) -> None:
         from unittest.mock import Mock, patch
 
         import rssfeeder.wp_json as wp_json
 
-        config = replace(self.config, wp_category_id=26, section_start_heading="")
+        config = replace(
+            self.config,
+            wp_category_id=26,
+            section_start_heading="",
+            stop_at_link_contains="asus-lanca-fonte-de-alimentacao-de-3000-w",
+        )
         fixture = (
             Path(__file__).parent / "fixtures" / "pcguia_wp_posts.json"
         ).read_text(encoding="utf-8")

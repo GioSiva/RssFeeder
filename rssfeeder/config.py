@@ -40,6 +40,12 @@ class FeedConfig:
     stop_at_link_contains: str = ""
     section_start_heading: str = ""
     section_stop_heading: str = ""
+    # Stop after the first widget whose text includes this label (e.g. «Mostrar mais»).
+    section_stop_at_text: str = ""
+    # Comma-separated heading labels; matching widgets are skipped (scan continues).
+    section_skip_headings: str = ""
+    # Comma-separated headings that end the scan immediately.
+    section_hard_stop_headings: str = ""
     user_agent: str = "RssFeeder/1.0 (+https://github.com/GioSiva/RssFeeder)"
     language: str = "en"
 
