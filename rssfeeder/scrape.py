@@ -77,15 +77,79 @@ def _href(el: Optional[Tag], base_url: str) -> Optional[str]:
     return urljoin(base_url, raw)
 
 
-def _first_url_from_srcset(srcset: str) -> Optional[str]:
-    urls: list[str] = []
+def _best_url_from_srcset(srcset: str) -> Optional[str]:
+    best_url: Optional[str] = None
+    best_width = -1
     for part in srcset.split(","):
         piece = part.strip().split()
-        if piece:
-            urls.append(piece[0])
-    if not urls:
+        if not piece:
+            continue
+        url = piece[0]
+        width = 0
+        if len(piece) > 1 and piece[1].endswith("w"):
+            try:
+                width = int(piece[1][:-1])
+            except ValueError:
+                width = 0
+        if width >= best_width:
+            best_width = width
+            best_url = url
+    return best_url
+
+
+def _srcset_values(el: Tag) -> list[str]:
+    values: list[str] = []
+    for attr in ("srcset", "data-lazy-srcset", "data-srcset"):
+        raw = el.get(attr)
+        if raw:
+            values.append(raw)
+    return values
+
+
+def _direct_image_values(el: Tag) -> list[str]:
+    values: list[str] = []
+    for attr in ("data-lazy-src", "data-src", "data-original", "src"):
+        raw = el.get(attr)
+        if raw and not raw.startswith("data:"):
+            values.append(raw)
+    return values
+
+
+def _prefer_rss_image_url(candidates: list[str], base_url: str) -> Optional[str]:
+    resolved: list[str] = []
+    for raw in candidates:
+        url = urljoin(base_url, raw.strip())
+        if url.startswith("data:"):
+            continue
+        resolved.append(url)
+    if not resolved:
         return None
-    return urls[-1]
+
+    def score(url: str) -> tuple[int, int]:
+        lower = url.lower()
+        format_score = 2
+        if lower.endswith(".webp"):
+            format_score = 0
+        elif ".jpg" in lower or ".jpeg" in lower or lower.endswith(".png"):
+            format_score = 2
+        size_hint = 0
+        for token in ("-870", "-1200", "-1024", "-768"):
+            if token in lower:
+                size_hint = int(token[1:])
+        return (format_score, size_hint)
+
+    return max(resolved, key=score)
+
+
+def _collect_image_candidates(container: Tag) -> list[str]:
+    candidates: list[str] = []
+    for el in container.select("source, img"):
+        for srcset in _srcset_values(el):
+            url = _best_url_from_srcset(srcset)
+            if url:
+                candidates.append(url)
+        candidates.extend(_direct_image_values(el))
+    return candidates
 
 
 def _resolve_image(article: Tag, base_url: str, image_selector: str) -> Optional[str]:
@@ -100,12 +164,30 @@ def _resolve_image(article: Tag, base_url: str, image_selector: str) -> Optional
         return None
 
     picture = root if root.name == "picture" else root.select_one("picture")
-    if picture:
+    containers: list[Tag] = []
+    if picture is not None:
+        containers.append(picture)
+    if root not in containers:
+        containers.append(root)
+
+    candidates: list[str] = []
+    for container in containers:
+        candidates.extend(_collect_image_candidates(container))
+
+    if picture is None and root.name == "img":
+        for srcset in _srcset_values(root):
+            url = _best_url_from_srcset(srcset)
+            if url:
+                candidates.append(url)
+        candidates.extend(_direct_image_values(root))
+
+    # Game Informer: prefer large desktop sources when present
+    if picture is not None:
         preferred: list[Tag] = []
         fallback: list[Tag] = []
         for source in picture.select("source"):
-            srcset = source.get("srcset")
-            if not srcset:
+            srcsets = _srcset_values(source)
+            if not srcsets:
                 continue
             media = source.get("media", "")
             if "min-width: 851px" in media or "min-width: 1200px" in media:
@@ -113,21 +195,12 @@ def _resolve_image(article: Tag, base_url: str, image_selector: str) -> Optional
             else:
                 fallback.append(source)
         for source in preferred + fallback:
-            srcset = source.get("srcset")
-            if srcset:
-                url = _first_url_from_srcset(srcset)
+            for srcset in _srcset_values(source):
+                url = _best_url_from_srcset(srcset)
                 if url:
-                    return urljoin(base_url, url)
-        img = picture.select_one("img")
-        if img and img.get("src"):
-            return urljoin(base_url, img["src"])
+                    candidates.insert(0, url)
 
-    if root.name == "img" and root.get("src"):
-        return urljoin(base_url, root["src"])
-    img = root.select_one("img")
-    if img and img.get("src"):
-        return urljoin(base_url, img["src"])
-    return None
+    return _prefer_rss_image_url(candidates, base_url)
 
 
 def _resolve_title(article: Tag, primary_selector: str) -> Optional[str]:
