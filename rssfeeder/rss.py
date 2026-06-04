@@ -3,7 +3,7 @@ from __future__ import annotations
 from feedgen.feed import FeedGenerator
 
 from rssfeeder.config import FeedConfig
-from rssfeeder.scrape import FeedItem, format_rfc822
+from rssfeeder.scrape import FeedItem
 
 
 def build_rss(config: FeedConfig, items: list[FeedItem]) -> str:
