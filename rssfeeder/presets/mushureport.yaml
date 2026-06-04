@@ -1,0 +1,17 @@
+id: mushureport
+title: Mushu Report — Disney Lorcana News
+site_url: https://giosiva.github.io/RssFeeder
+page_url: https://mushureport.com/category/news/
+description: Latest Disney Lorcana news from Mushu Report (category News, newest first).
+list_selector: "article.entry-card"
+item_title_selector: "h2.entry-title a"
+item_link_selector: "h2.entry-title a"
+item_author_selector: ".meta-author a span, .meta-author a"
+item_date_selector: "time"
+item_date_attribute: datetime
+item_image_selector: ".ct-media-container picture, .ct-media-container img"
+item_comments_selector: ""
+max_pages: 5
+pagination: path
+item_sort: date
+language: en

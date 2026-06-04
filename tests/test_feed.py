@@ -71,5 +71,34 @@ class GameInformerFeedTests(unittest.TestCase):
         self.assertTrue(item.image_url.startswith("https://gameinformer.com/"))
 
 
+class MushuReportFeedTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.config = load_preset("mushureport")
+        self.html = (
+            Path(__file__).parent / "fixtures" / "mushureport_snippet.html"
+        ).read_text(encoding="utf-8")
+
+    def test_scrape_fixture(self) -> None:
+        items = scrape_items(self.config, html=self.html)
+        self.assertEqual(len(items), 1)
+        item = items[0]
+        self.assertEqual(item.guid, "post-18944")
+        self.assertIn("Toy Story 5", item.title)
+        self.assertTrue(item.link.startswith("https://mushureport.com/"))
+        self.assertEqual(item.category, "News")
+        self.assertEqual(item.author, "jiggy")
+        self.assertIsNotNone(item.image_url)
+        assert item.image_url is not None
+        self.assertIn("cdn.mushureport.com", item.image_url)
+
+    def test_listing_urls_path_pagination(self) -> None:
+        from rssfeeder.scrape import _listing_urls
+
+        urls = _listing_urls(self.config)
+        self.assertEqual(len(urls), 5)
+        self.assertEqual(urls[0], "https://mushureport.com/category/news/")
+        self.assertEqual(urls[1], "https://mushureport.com/category/news/page/2/")
+
+
 if __name__ == "__main__":
     unittest.main()
