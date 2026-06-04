@@ -24,6 +24,7 @@ SECTION_SELECTORS = (
     ".bug-wrapper.article-section",
     ".gi5-field-bug.field__item",
     ".field--name-field-bug .field__item",
+    ".meta-categories a",
 )
 
 
@@ -189,9 +190,19 @@ def _item_description(
     return "\n".join(parts)
 
 
+def _wordpress_post_guid(article: Tag) -> Optional[str]:
+    for cls in article.get("class") or []:
+        if cls.startswith("post-") and cls[5:].isdigit():
+            return cls
+    return None
+
+
 def _article_key(article: Tag, link: str) -> str:
     if article.get("data-id"):
         return f"gi-{article.get('data-id')}"
+    wp_guid = _wordpress_post_guid(article)
+    if wp_guid:
+        return wp_guid
     return link
 
 
@@ -208,7 +219,9 @@ def _fetch_html(url: str, config: FeedConfig) -> str:
 def _listing_urls(config: FeedConfig) -> list[str]:
     if config.max_pages <= 1:
         return [config.page_url]
-    base = config.page_url.split("?", 1)[0]
+    base = config.page_url.split("?", 1)[0].rstrip("/")
+    if config.pagination == "path":
+        return [config.page_url] + [f"{base}/page/{page}/" for page in range(2, config.max_pages + 1)]
     return [config.page_url] + [f"{base}?page={page}" for page in range(2, config.max_pages + 1)]
 
 
@@ -251,8 +264,12 @@ def _scrape_page_html(
             else None
         )
 
-        guid = article.get("id") or key
+        guid = article.get("id") or _wordpress_post_guid(article) or key
         author = _text(author_el)
+        if not author and author_el is not None:
+            img = author_el.select_one("img")
+            if img is not None:
+                author = (img.get("alt") or "").strip() or None
         image_url = _resolve_image(article, config.page_url, config.item_image_selector)
         comments_url = _href(comments_el, config.page_url)
         category = _resolve_section(article)

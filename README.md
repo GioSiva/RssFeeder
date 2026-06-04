@@ -20,6 +20,10 @@ Extracted fields per item:
 
 Reads news teasers from [Game Informer News](https://gameinformer.com/news) (`article.node--view-mode-teaser`).
 
+### Mushu Report
+
+Reads [News](https://mushureport.com/category/news/) archive cards (`article.entry-card`) — Disney Lorcana updates. Fetches 5 listing pages via WordPress pagination (`/page/N/`).
+
 ## Setup
 
 ```bash
@@ -34,8 +38,9 @@ Depois de fazer merge para `main` e ativar **GitHub Pages** (Settings → Pages 
 
 | Recurso | URL |
 |---------|-----|
-| PokeBeach | https://giosiva.github.io/RssFeeder/pokebeach.xml |
-| Game Informer | https://giosiva.github.io/RssFeeder/gameinformer.xml |
+| PokeBeach | https://giosiva.github.io/RssFeeder/feed/pokebeach.xml |
+| Game Informer | https://giosiva.github.io/RssFeeder/feed/gameinformer.xml |
+| Mushu Report | https://giosiva.github.io/RssFeeder/feed/mushureport.xml |
 | Página inicial | https://giosiva.github.io/RssFeeder/ |
 
 O workflow `.github/workflows/publish-feed.yml` corre **de hora a hora** (e em cada push para `main`). Pode também disparar manualmente em Actions → *Publish RSS to GitHub Pages* → *Run workflow*.

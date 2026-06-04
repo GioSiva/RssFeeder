@@ -36,7 +36,7 @@ No separate linter is configured yet.
 
 Production feed URLs (after merge to `main` + Pages enabled):
 
-- Canonical: `https://giosiva.github.io/RssFeeder/feed/pokebeach.xml` (and `feed/gameinformer.xml`)
+- Canonical: `https://giosiva.github.io/RssFeeder/feed/pokebeach.xml` (also `feed/gameinformer.xml`, `feed/mushureport.xml`)
 - Legacy copy at repo root: `pokebeach.xml`, `gameinformer.xml` (same content)
 - Index with deploy verification: `https://giosiva.github.io/RssFeeder/`
 

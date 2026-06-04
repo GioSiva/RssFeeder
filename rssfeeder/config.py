@@ -27,6 +27,8 @@ class FeedConfig:
     item_comments_selector: str = '.entry-meta a[href*="#comments"]'
     item_date_attribute: str = ""
     max_pages: int = 1
+    # query: ?page=N (default). path: WordPress-style /page/N/ under page_url.
+    pagination: str = "query"
     item_sort: str = "date"
     # Path under site_url where this feed is served (e.g. feed/gameinformer.xml).
     feed_public_path: str = ""
