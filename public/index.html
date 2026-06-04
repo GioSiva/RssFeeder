@@ -3,209 +3,461 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RssFeeder — feeds RSS</title>
+    <title>RssFeeder — feeds RSS personalizados</title>
+    <meta
+      name="description"
+      content="Feeds RSS para PokeBeach, Game Informer e Mushu Report. Atualização automática de hora a hora."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="alternate"
       type="application/rss+xml"
       title="PokeBeach"
-      href="feed/pokebeach.xml"
+      href="https://giosiva.github.io/RssFeeder/feed/pokebeach.xml"
     />
     <link
       rel="alternate"
       type="application/rss+xml"
       title="Game Informer"
-      href="feed/gameinformer.xml"
+      href="https://giosiva.github.io/RssFeeder/feed/gameinformer.xml"
     />
     <link
       rel="alternate"
       type="application/rss+xml"
       title="Mushu Report"
-      href="feed/mushureport.xml"
+      href="https://giosiva.github.io/RssFeeder/feed/mushureport.xml"
     />
     <style>
       :root {
         color-scheme: light dark;
+        --bg: #0f1419;
+        --bg-card: #1a222c;
+        --bg-card-hover: #222c38;
+        --text: #e8eef4;
+        --muted: #9aa8b5;
+        --accent: #5eead4;
+        --accent-2: #a78bfa;
+        --border: rgba(255, 255, 255, 0.08);
+        --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        --radius: 14px;
+        --font: "DM Sans", system-ui, sans-serif;
       }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f4f7fb;
+          --bg-card: #ffffff;
+          --bg-card-hover: #f8fafc;
+          --text: #1a2332;
+          --muted: #5c6b7a;
+          --border: rgba(15, 30, 50, 0.1);
+          --shadow: 0 12px 40px rgba(30, 50, 80, 0.08);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: system-ui, sans-serif;
-        max-width: 44rem;
-        margin: 2rem auto;
-        padding: 0 1rem;
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--text);
         line-height: 1.55;
       }
-      code,
-      pre {
-        background: #f4f4f4;
-        border-radius: 4px;
+
+      .hero {
+        padding: 3rem 1.5rem 2.5rem;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          rgba(94, 234, 212, 0.12) 0%,
+          rgba(167, 139, 250, 0.14) 50%,
+          rgba(94, 234, 212, 0.06) 100%
+        );
+        border-bottom: 1px solid var(--border);
       }
-      code {
-        padding: 0.1em 0.35em;
+
+      .hero h1 {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.75rem, 5vw, 2.35rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
       }
-      pre {
-        padding: 0.75rem 1rem;
-        overflow-x: auto;
+
+      .hero p {
+        margin: 0 auto;
+        max-width: 32rem;
+        color: var(--muted);
+        font-size: 1.05rem;
       }
-      li {
-        margin: 0.75rem 0;
-      }
-      .ok {
-        color: #0a7a2f;
-      }
-      .warn {
-        color: #9a6700;
-      }
-      #status {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1.25rem 0;
-      }
-      #status.loading {
-        opacity: 0.85;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.92rem;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 0.35rem 0.5rem;
-        border-bottom: 1px solid #ddd;
-      }
-      details {
+
+      .badge {
+        display: inline-block;
         margin-top: 1rem;
+        padding: 0.35rem 0.85rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--accent);
+        background: rgba(94, 234, 212, 0.12);
+        border: 1px solid rgba(94, 234, 212, 0.25);
+        border-radius: 999px;
+      }
+
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+
+      h2 {
+        margin: 0 0 1.25rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .feed-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .feed-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem 1.35rem;
+        box-shadow: var(--shadow);
+        transition: background 0.15s ease, transform 0.15s ease;
+      }
+
+      .feed-card:hover {
+        background: var(--bg-card-hover);
+        transform: translateY(-1px);
+      }
+
+      .feed-card header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .feed-card h3 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+
+      .feed-card .tag {
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        background: rgba(167, 139, 250, 0.15);
+        color: var(--accent-2);
+      }
+
+      .feed-card .blurb {
+        margin: 0 0 1rem;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .feed-card .source {
+        font-size: 0.85rem;
+        margin-bottom: 0.85rem;
+      }
+
+      .feed-card .source a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .feed-card .source a:hover {
+        text-decoration: underline;
+      }
+
+      .url-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .url-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+
+      .url-box {
+        display: flex;
+        align-items: stretch;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .url-box a.feed-url {
+        flex: 1;
+        min-width: 0;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.8rem;
+        font-family: ui-monospace, "Cascadia Code", monospace;
+        word-break: break-all;
+        color: var(--text);
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        text-decoration: none;
+        transition: border-color 0.15s ease, color 0.15s ease;
+      }
+
+      @media (prefers-color-scheme: light) {
+        .url-box a.feed-url {
+          background: #f0f4f8;
+        }
+      }
+
+      .url-box a.feed-url:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .copy-btn {
+        flex-shrink: 0;
+        padding: 0.65rem 1rem;
+        font-family: var(--font);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--bg);
+        background: linear-gradient(135deg, var(--accent), #2dd4bf);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.1s ease;
+      }
+
+      .copy-btn:hover {
+        opacity: 0.92;
+      }
+
+      .copy-btn:active {
+        transform: scale(0.98);
+      }
+
+      .copy-btn.copied {
+        background: var(--accent-2);
+        color: #fff;
+      }
+
+      .tips {
+        margin-top: 2.5rem;
+        padding: 1.25rem 1.35rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .tips strong {
+        color: var(--text);
+      }
+
+      .tips ul {
+        margin: 0.75rem 0 0;
+        padding-left: 1.2rem;
+      }
+
+      .tips li {
+        margin: 0.4rem 0;
+      }
+
+      footer {
+        text-align: center;
+        padding: 0 1rem 2rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      footer a {
+        color: var(--accent);
+        text-decoration: none;
       }
     </style>
   </head>
   <body>
-    <h1>RssFeeder</h1>
-    <p>
-      Feeds RSS gerados a partir de páginas HTML. Atualização automática de hora a hora
-      (GitHub Actions → GitHub Pages).
-    </p>
+    <header class="hero">
+      <h1>RssFeeder</h1>
+      <p>
+        Feeds RSS feitos à medida a partir das tuas páginas favoritas. Copia o link
+        completo e cola no Feedly, Inoreader, NetNewsWire ou outro leitor.
+      </p>
+      <span class="badge">Atualização automática · de hora a hora</span>
+    </header>
 
-    <h2>URLs corretas para o leitor RSS</h2>
-    <p>
-      Use o ficheiro <strong>.xml</strong>, não só a pasta do site. Estes são os links
-      canónicos:
-    </p>
-    <ul>
-      <li>
-        <strong>PokeBeach</strong> — TCG<br />
-        <a href="feed/pokebeach.xml"><code>feed/pokebeach.xml</code></a>
-        <br />
-        <small>Legado (igual): <a href="pokebeach.xml"><code>pokebeach.xml</code></a></small>
-      </li>
-      <li>
-        <strong>Game Informer</strong> — News, State of Play, opinion (página 1)<br />
-        <a href="feed/gameinformer.xml"><code>feed/gameinformer.xml</code></a>
-        <br />
-        <small>Legado (igual): <a href="gameinformer.xml"><code>gameinformer.xml</code></a></small>
-      </li>
-      <li>
-        <strong>Mushu Report</strong> — Disney Lorcana (News)<br />
-        <a href="feed/mushureport.xml"><code>feed/mushureport.xml</code></a>
-        <br />
-        <small>Legado (igual): <a href="mushureport.xml"><code>mushureport.xml</code></a></small>
-      </li>
-    </ul>
+    <main>
+      <h2>Feeds disponíveis</h2>
+      <ul class="feed-list">
+        <li class="feed-card">
+          <header>
+            <h3>PokeBeach</h3>
+            <span class="tag">TCG</span>
+          </header>
+          <p class="blurb">Notícias Pokémon TCG da homepage do PokeBeach.</p>
+          <p class="source">
+            Fonte:
+            <a href="https://www.pokebeach.com/" target="_blank" rel="noopener"
+              >pokebeach.com</a
+            >
+          </p>
+          <div class="url-row">
+            <span class="url-label">URL do feed RSS</span>
+            <div class="url-box">
+              <a
+                class="feed-url"
+                href="https://giosiva.github.io/RssFeeder/feed/pokebeach.xml"
+                >https://giosiva.github.io/RssFeeder/feed/pokebeach.xml</a
+              >
+              <button
+                type="button"
+                class="copy-btn"
+                data-copy="https://giosiva.github.io/RssFeeder/feed/pokebeach.xml"
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
+        </li>
 
-    <div id="status" class="loading" aria-live="polite">
-      A verificar o que está publicado em GitHub Pages…
-    </div>
+        <li class="feed-card">
+          <header>
+            <h3>Game Informer</h3>
+            <span class="tag">Videojogos</span>
+          </header>
+          <p class="blurb">
+            News, State of Play, opinion e mais — primeira página de
+            gameinformer.com/news.
+          </p>
+          <p class="source">
+            Fonte:
+            <a href="https://gameinformer.com/news" target="_blank" rel="noopener"
+              >gameinformer.com/news</a
+            >
+          </p>
+          <div class="url-row">
+            <span class="url-label">URL do feed RSS</span>
+            <div class="url-box">
+              <a
+                class="feed-url"
+                href="https://giosiva.github.io/RssFeeder/feed/gameinformer.xml"
+                >https://giosiva.github.io/RssFeeder/feed/gameinformer.xml</a
+              >
+              <button
+                type="button"
+                class="copy-btn"
+                data-copy="https://giosiva.github.io/RssFeeder/feed/gameinformer.xml"
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
+        </li>
 
-    <details>
-      <summary>O feed “continua igual” / só vejo News?</summary>
-      <ol>
-        <li>
-          <strong>Cache do leitor:</strong> remova o feed e volte a subscrever, ou use
-          <code>gameinformer.xml?refresh=1</code> (alguns leitores ignoram o parâmetro).
-          O GitHub Pages pode cachear o XML ~10 minutos.
+        <li class="feed-card">
+          <header>
+            <h3>Mushu Report</h3>
+            <span class="tag">Lorcana</span>
+          </header>
+          <p class="blurb">
+            Disney Lorcana — arquivo News do Mushu Report (~50 artigos recentes).
+          </p>
+          <p class="source">
+            Fonte:
+            <a
+              href="https://mushureport.com/category/news/"
+              target="_blank"
+              rel="noopener"
+              >mushureport.com/category/news</a
+            >
+          </p>
+          <div class="url-row">
+            <span class="url-label">URL do feed RSS</span>
+            <div class="url-box">
+              <a
+                class="feed-url"
+                href="https://giosiva.github.io/RssFeeder/feed/mushureport.xml"
+                >https://giosiva.github.io/RssFeeder/feed/mushureport.xml</a
+              >
+              <button
+                type="button"
+                class="copy-btn"
+                data-copy="https://giosiva.github.io/RssFeeder/feed/mushureport.xml"
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
         </li>
-        <li>
-          <strong>Ordem no site vs. no leitor:</strong> no
-          <a href="https://gameinformer.com/news">gameinformer.com/news</a> os três
-          destaques no topo são <em>News</em>; a seguir vêm State of Play e outras
-          secções. O XML segue essa ordem, mas muitas apps ordenam por
-          <strong>data de publicação</strong> — notícias mais recentes (4 Jun) ficam acima
-          de State of Play (2 Jun).
-        </li>
-        <li>
-          <strong>Secções fora da página 1:</strong> “gamer culture” e outras etiquetas
-          aparecem mais abaixo no site (após “Load more”); este feed inclui só a
-          primeira página (~20 artigos).
-        </li>
-        <li>
-          <strong>Imagens:</strong> as URLs apontam para gameinformer.com; alguns leitores
-          bloqueiam imagens remotas ou hotlink.
-        </li>
-      </ol>
-    </details>
+      </ul>
 
-    <p><small>Base: <code>https://giosiva.github.io/RssFeeder/</code></small></p>
+      <aside class="tips">
+        <strong>Dicas rápidas</strong>
+        <ul>
+          <li>Usa sempre o link <strong>.xml</strong> completo, não só a pasta do site.</li>
+          <li>
+            Se o feed parecer desatualizado, remove-o do leitor e volta a subscrever
+            (o GitHub Pages pode cachear ~10 minutos).
+          </li>
+          <li>
+            Alguns leitores ordenam por data em vez da ordem do site — isso é normal no
+            Game Informer.
+          </li>
+        </ul>
+      </aside>
+    </main>
+
+    <footer>
+      <a href="https://github.com/GioSiva/RssFeeder" target="_blank" rel="noopener"
+        >Código no GitHub</a
+      >
+    </footer>
 
     <script>
-      const statusEl = document.getElementById("status");
-
-      function escapeHtml(text) {
-        return text
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;");
-      }
-
-      async function loadBuildInfo() {
-        const res = await fetch("build-info.json", { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("build-info.json indisponível");
-        }
-        return res.json();
-      }
-
-      function renderBuildInfo(data) {
-        const gi = data.feeds.find((f) => f.file === "gameinformer.xml");
-        let html = `<p class="ok"><strong>Deploy verificado</strong> (${escapeHtml(
-          data.generatedAt
-        )} UTC)</p>`;
-
-        if (gi) {
-          const cats = Object.entries(gi.categories)
-            .map(([k, v]) => `${escapeHtml(k)}: ${v}`)
-            .join(", ");
-          html += `<p><strong>${escapeHtml(gi.title)}</strong> — ${gi.itemCount} itens`;
-          if (gi.lastBuildDate) {
-            html += ` · última geração: ${escapeHtml(gi.lastBuildDate)}`;
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const url = btn.getAttribute("data-copy");
+          if (!url) return;
+          try {
+            await navigator.clipboard.writeText(url);
+            const prev = btn.textContent;
+            btn.textContent = "Copiado!";
+            btn.classList.add("copied");
+            setTimeout(() => {
+              btn.textContent = prev;
+              btn.classList.remove("copied");
+            }, 2000);
+          } catch {
+            window.prompt("Copia o URL:", url);
           }
-          html += `</p><p>Categorias: ${cats || "—"}</p>`;
-          html += "<p>Primeiros itens no XML (ordem do site):</p><table><thead><tr><th>#</th><th>Título</th><th>Etiqueta</th></tr></thead><tbody>";
-          gi.sampleItems.forEach((row, i) => {
-            html += `<tr><td>${i + 1}</td><td>${escapeHtml(row.title)}</td><td>${escapeHtml(
-              row.category
-            )}</td></tr>`;
-          });
-          html += "</tbody></table>";
-          const hasStateOfPlay = (gi.categories["State of Play"] || 0) > 0;
-          if (hasStateOfPlay) {
-            html +=
-              '<p class="ok">State of Play está no feed publicado. Se o leitor só mostra News, altere a ordenação para “ordem do feed” ou desative ordenação por data.</p>';
-          } else {
-            html +=
-              '<p class="warn">State of Play não aparece neste resumo — o deploy pode estar desatualizado.</p>';
-          }
-        }
-
-        statusEl.classList.remove("loading");
-        statusEl.innerHTML = html;
-      }
-
-      loadBuildInfo().catch(() => {
-        statusEl.classList.remove("loading");
-        statusEl.innerHTML =
-          '<p class="warn">Não foi possível carregar <code>build-info.json</code>. Abra <a href="feed/gameinformer.xml">feed/gameinformer.xml</a> no browser e procure <code>State of Play</code> nas etiquetas <code>&lt;category&gt;</code>.</p>';
-      }).then((data) => {
-        if (data) renderBuildInfo(data);
+        });
       });
     </script>
   </body>

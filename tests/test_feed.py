@@ -91,6 +91,19 @@ class MushuReportFeedTests(unittest.TestCase):
         assert item.image_url is not None
         self.assertIn("cdn.mushureport.com", item.image_url)
 
+    def test_lazy_loaded_image(self) -> None:
+        html = (
+            Path(__file__).parent / "fixtures" / "mushureport_lazy_image.html"
+        ).read_text(encoding="utf-8")
+        items = scrape_items(self.config, html=html)
+        self.assertEqual(len(items), 1)
+        item = items[0]
+        self.assertIsNotNone(item.image_url)
+        assert item.image_url is not None
+        self.assertFalse(item.image_url.startswith("data:"))
+        self.assertIn("test-768x441.jpg", item.image_url)
+        self.assertNotIn(".webp", item.image_url)
+
     def test_listing_urls_path_pagination(self) -> None:
         from rssfeeder.scrape import _listing_urls
 
