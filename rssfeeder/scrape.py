@@ -363,6 +363,14 @@ def _scrape_page_html(
 
 
 def scrape_items(config: FeedConfig, *, html: Optional[str] = None) -> list[FeedItem]:
+    if html is not None and config.wp_category_id:
+        raise ValueError("WordPress JSON presets do not support HTML fixtures in scrape_items")
+
+    if config.wp_category_id:
+        from rssfeeder.wp_json import scrape_wp_json_items
+
+        return scrape_wp_json_items(config)
+
     items: list[FeedItem] = []
     seen: set[str] = set()
 

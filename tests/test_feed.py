@@ -113,5 +113,35 @@ class MushuReportFeedTests(unittest.TestCase):
         self.assertEqual(urls[1], "https://mushureport.com/category/news/page/2/")
 
 
+class PcguiaFeedTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.config = load_preset("pcguia")
+
+    def test_wp_json_fixture(self) -> None:
+        from unittest.mock import Mock, patch
+
+        import rssfeeder.wp_json as wp_json
+
+        fixture = (
+            Path(__file__).parent / "fixtures" / "pcguia_wp_posts.json"
+        ).read_text(encoding="utf-8")
+        response = Mock()
+        response.json.return_value = __import__("json").loads(fixture)
+        response.headers = {"X-WP-TotalPages": "1"}
+        response.raise_for_status = Mock()
+
+        with patch.object(wp_json.requests, "get", return_value=response):
+            items = wp_json.scrape_wp_json_items(self.config)
+
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0].title, "NZXT aposta forte na iluminação")
+        self.assertIn("Asus lança fonte", items[-1].title)
+        self.assertIn("asus-lanca-fonte", items[-1].link)
+        self.assertEqual(items[-1].image_url, "https://www.pcguia.pt/wp-content/uploads/2026/06/ROG_Thor.jpg")
+        titles = [item.title for item in items]
+        self.assertNotIn("App do Dia – Exemplo", titles)
+        self.assertNotIn("Nvidia revela o DLSS 4.5", titles)
+
+
 if __name__ == "__main__":
     unittest.main()

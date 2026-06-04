@@ -1,0 +1,22 @@
+id: pcguia
+title: PCGuia — Notícias
+site_url: https://giosiva.github.io/RssFeeder
+page_url: https://www.pcguia.pt/category/noticias/
+description: >-
+  Notícias recentes do PCGuia.pt (sem Dicas e Guias, App do Dia, etc.),
+  da mais recente até «Asus lança fonte de alimentação de 3000 W…» inclusive.
+list_selector: ".p-wrap"
+item_title_selector: ".entry-title a"
+item_link_selector: ".entry-title a"
+item_author_selector: ""
+item_date_selector: ""
+item_image_selector: ".p-featured picture, .p-featured img"
+item_comments_selector: ""
+max_pages: 1
+item_sort: date
+language: pt
+wp_category_id: 26
+wp_per_page: 100
+exclude_category_ids: "3,167289,178213"
+exclude_link_substrings: "/category/dicas/,app-do-dia,download-da-semana,descomplicometro,guia-completo"
+stop_at_link_contains: asus-lanca-fonte-de-alimentacao-de-3000-w-capaz-de-alimentar-quatro-rtx-5090
