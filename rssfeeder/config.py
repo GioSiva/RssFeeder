@@ -38,6 +38,8 @@ class FeedConfig:
     exclude_category_ids: str = ""
     exclude_link_substrings: str = ""
     stop_at_link_contains: str = ""
+    section_start_heading: str = ""
+    section_stop_heading: str = ""
     user_agent: str = "RssFeeder/1.0 (+https://github.com/GioSiva/RssFeeder)"
     language: str = "en"
 

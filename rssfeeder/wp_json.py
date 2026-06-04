@@ -100,6 +100,27 @@ def _should_skip_post(
     return any(part in link for part in exclude_link_substrings)
 
 
+def _post_to_feed_item(post: dict[str, Any], exclude_category_ids: set[int]) -> FeedItem:
+    link = post.get("link") or ""
+    title = _plain_title(post.get("title", {}).get("rendered", ""))
+    published = _parse_datetime(post["date"])
+    author = _author_name(post)
+    image_url = _featured_image_url(post)
+    category = _category_label(post, exclude_category_ids)
+    guid = f"post-{post.get('id', link)}"
+    return FeedItem(
+        guid=guid,
+        title=title,
+        link=link,
+        published=published,
+        author=author,
+        description_html=_item_description(title, author, image_url, category),
+        image_url=image_url,
+        comments_url=None,
+        category=category,
+    )
+
+
 def scrape_wp_json_items(config: FeedConfig) -> list[FeedItem]:
     if not config.wp_category_id:
         raise ValueError("wp_category_id is required for WordPress JSON feeds")
@@ -139,32 +160,13 @@ def scrape_wp_json_items(config: FeedConfig) -> list[FeedItem]:
             ):
                 continue
 
-            link = post.get("link") or ""
-            title = _plain_title(post.get("title", {}).get("rendered", ""))
-            if not title or not link:
+            if not post.get("link") or not post.get("title", {}).get("rendered"):
                 continue
 
-            published = _parse_datetime(post["date"])
-            author = _author_name(post)
-            image_url = _featured_image_url(post)
-            category = _category_label(post, exclude_category_ids)
-            guid = f"post-{post.get('id', link)}"
+            item = _post_to_feed_item(post, exclude_category_ids)
+            items.append(item)
 
-            items.append(
-                FeedItem(
-                    guid=guid,
-                    title=title,
-                    link=link,
-                    published=published,
-                    author=author,
-                    description_html=_item_description(title, author, image_url, category),
-                    image_url=image_url,
-                    comments_url=None,
-                    category=category,
-                )
-            )
-
-            if stop_marker and stop_marker in link:
+            if stop_marker and stop_marker in item.link:
                 return items
 
         total_pages = int(response.headers.get("X-WP-TotalPages", "1"))

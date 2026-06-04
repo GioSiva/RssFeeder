@@ -117,11 +117,50 @@ class PcguiaFeedTests(unittest.TestCase):
     def setUp(self) -> None:
         self.config = load_preset("pcguia")
 
+    def test_mais_lidas_section_fixture(self) -> None:
+        from unittest.mock import Mock, patch
+
+        import rssfeeder.section_scrape as section_scrape
+
+        html = (
+            Path(__file__).parent / "fixtures" / "pcguia_mais_lidas.html"
+        ).read_text(encoding="utf-8")
+        posts = {
+            100: {
+                "id": 100,
+                "date": "2026-06-04T12:00:00",
+                "link": "https://www.pcguia.pt/2026/06/nzxt-aposta-forte/",
+                "title": {"rendered": "NZXT aposta forte"},
+                "categories": [26],
+                "_embedded": {"author": [{"name": "Redação"}], "wp:featuredmedia": []},
+            },
+            99: {
+                "id": 99,
+                "date": "2026-06-03T16:30:26",
+                "link": "https://www.pcguia.pt/2026/06/asus-lanca-fonte-de-alimentacao-de-3000-w-capaz-de-alimentar-quatro-rtx-5090/",
+                "title": {"rendered": "Asus lança fonte de alimentação de 3000 W"},
+                "categories": [26],
+                "_embedded": {"author": [{"name": "João"}], "wp:featuredmedia": []},
+            },
+        }
+
+        def fake_fetch(_config: object, post_ids: list[int]) -> dict[int, dict]:
+            return {pid: posts[pid] for pid in post_ids if pid in posts}
+
+        with patch.object(section_scrape, "_fetch_posts_by_ids", side_effect=fake_fetch):
+            items = scrape_items(self.config, html=html)
+
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0].title, "NZXT aposta forte")
+        self.assertIn("Asus lança fonte", items[1].title)
+        self.assertIn("nzxt.jpg", items[0].image_url or "")
+
     def test_wp_json_fixture(self) -> None:
         from unittest.mock import Mock, patch
 
         import rssfeeder.wp_json as wp_json
 
+        config = replace(self.config, wp_category_id=26, section_start_heading="")
         fixture = (
             Path(__file__).parent / "fixtures" / "pcguia_wp_posts.json"
         ).read_text(encoding="utf-8")
@@ -131,7 +170,7 @@ class PcguiaFeedTests(unittest.TestCase):
         response.raise_for_status = Mock()
 
         with patch.object(wp_json.requests, "get", return_value=response):
-            items = wp_json.scrape_wp_json_items(self.config)
+            items = wp_json.scrape_wp_json_items(config)
 
         self.assertEqual(len(items), 2)
         self.assertEqual(items[0].title, "NZXT aposta forte na iluminação")
