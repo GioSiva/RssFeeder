@@ -198,5 +198,32 @@ class PcguiaFeedTests(unittest.TestCase):
         self.assertNotIn("Nvidia revela o DLSS 4.5", titles)
 
 
+class TheVergeFeedTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.config = load_preset("theverge")
+
+    def test_import_atom_fixture(self) -> None:
+        from unittest.mock import Mock, patch
+
+        import rssfeeder.feed_import as feed_import
+
+        fixture = (
+            Path(__file__).parent / "fixtures" / "theverge_atom_snippet.xml"
+        ).read_text(encoding="utf-8")
+        response = Mock()
+        response.content = fixture.encode("utf-8")
+        response.raise_for_status = Mock()
+
+        with patch.object(feed_import.requests, "get", return_value=response):
+            items = feed_import.import_feed_items(self.config)
+
+        self.assertEqual(len(items), 1)
+        item = items[0]
+        self.assertEqual(item.title, "Test headline from The Verge")
+        self.assertEqual(item.author, "Jane Doe")
+        self.assertEqual(item.category, "Tech")
+        self.assertIn("platform.theverge.com", item.image_url or "")
+
+
 if __name__ == "__main__":
     unittest.main()

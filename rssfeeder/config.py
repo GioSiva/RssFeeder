@@ -32,6 +32,8 @@ class FeedConfig:
     item_sort: str = "date"
     # Path under site_url where this feed is served (e.g. feed/gameinformer.xml).
     feed_public_path: str = ""
+    # Import from an external RSS/Atom URL instead of scraping HTML.
+    source_feed_url: str = ""
     # WordPress REST API (optional): when wp_category_id > 0, fetch posts via JSON.
     wp_category_id: int = 0
     wp_per_page: int = 100
