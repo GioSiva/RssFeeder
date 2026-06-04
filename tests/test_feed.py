@@ -223,8 +223,8 @@ class TheVergeFeedTests(unittest.TestCase):
         self.assertEqual(item.author, "Jane Doe")
         self.assertEqual(item.category, "Tech")
         self.assertIn("platform.theverge.com", item.image_url or "")
-        self.assertIn("<img", item.description_html)
-        self.assertNotIn("Short plain summary", item.description_html)
+        self.assertIn('<p><img src="https://platform.theverge.com', item.description_html)
+        self.assertNotIn("<figure>", item.description_html)
 
 
 if __name__ == "__main__":

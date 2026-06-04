@@ -128,12 +128,8 @@ def _parse_atom_entry(entry: ET.Element, config: FeedConfig) -> Optional[FeedIte
 
     guid = _atom_text(entry, "id") or link
     image_url = _first_image_from_html(content_html, config.page_url)
-    if content_html:
-        description_html = content_html
-        if image_url and "<img" not in content_html.lower():
-            description_html = _item_description(title, author or None, image_url, category) + content_html
-    else:
-        description_html = _item_description(title, author or None, image_url, category)
+    # Simple <img> + text — Opera GX and most readers ignore <figure> blocks from Atom.
+    description_html = _item_description(title, author or None, image_url, category)
 
     return FeedItem(
         guid=guid,
@@ -167,7 +163,7 @@ def _parse_rss_item(item: ET.Element, config: FeedConfig) -> Optional[FeedItem]:
     guid = child_text("guid") or link
     content_html = child_text("description")
     image_url = _first_image_from_html(content_html, config.page_url)
-    description_html = content_html or _item_description(title, author, image_url, category)
+    description_html = _item_description(title, author, image_url, category)
 
     return FeedItem(
         guid=guid,
