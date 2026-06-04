@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>The Verge</title>
+  <entry>
+    <title>Test headline from The Verge</title>
+    <link rel="alternate" href="https://www.theverge.com/tech/1" />
+    <id>https://www.theverge.com/?p=1</id>
+    <published>2026-06-04T12:00:00+00:00</published>
+    <author><name>Jane Doe</name></author>
+    <category term="Tech" />
+    <content type="html">
+      <![CDATA[<img src="https://platform.theverge.com/wp-content/uploads/test.jpg" /><p>Body</p>]]>
+    </content>
+  </entry>
+</feed>

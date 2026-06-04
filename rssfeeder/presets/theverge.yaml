@@ -1,0 +1,16 @@
+id: theverge
+title: The Verge
+site_url: https://giosiva.github.io/RssFeeder
+page_url: https://www.theverge.com/
+description: Technology news from The Verge (mirrored from the official Atom feed as RSS 2.0).
+source_feed_url: https://www.theverge.com/rss/index.xml
+list_selector: ""
+item_title_selector: ""
+item_link_selector: ""
+item_author_selector: ""
+item_date_selector: ""
+item_image_selector: ""
+item_comments_selector: ""
+max_pages: 1
+item_sort: date
+language: en
