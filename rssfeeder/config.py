@@ -25,6 +25,7 @@ class FeedConfig:
     item_date_selector: str = '.entry-meta a[rel="bookmark"]'
     item_image_selector: str = ".xpress_articleImage--full img"
     item_comments_selector: str = '.entry-meta a[href*="#comments"]'
+    item_date_attribute: str = ""
     user_agent: str = "RssFeeder/1.0 (+https://github.com/GioSiva/RssFeeder)"
     language: str = "en"
 

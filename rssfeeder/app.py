@@ -46,6 +46,7 @@ def create_app() -> Flask:
                 "name": "RssFeeder",
                 "feeds": {
                     "pokebeach": f"{_site_base_url()}/feed/pokebeach.xml",
+                    "gameinformer": f"{_site_base_url()}/feed/gameinformer.xml",
                 },
             }
         )

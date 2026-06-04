@@ -3,13 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RssFeeder — PokeBeach</title>
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="PokeBeach — TCG News"
-      href="pokebeach.xml"
-    />
+    <title>RssFeeder</title>
     <style>
       body {
         font-family: system-ui, sans-serif;
@@ -23,19 +17,24 @@
         padding: 0.1em 0.35em;
         border-radius: 4px;
       }
+      li {
+        margin: 0.75rem 0;
+      }
     </style>
   </head>
   <body>
     <h1>RssFeeder</h1>
-    <p>Feed RSS personalizado para notícias TCG do PokeBeach.</p>
-    <p>
-      <strong>Subscrever no leitor RSS:</strong><br />
-      <a href="pokebeach.xml"><code>pokebeach.xml</code></a>
-    </p>
-    <p>
-      URL completo:
-      <code>https://giosiva.github.io/RssFeeder/pokebeach.xml</code>
-    </p>
-    <p><small>Atualizado automaticamente via GitHub Actions.</small></p>
+    <p>Feeds RSS personalizados. Atualizados de hora a hora via GitHub Actions.</p>
+    <ul>
+      <li>
+        <strong>PokeBeach</strong> — TCG<br />
+        <a href="pokebeach.xml"><code>pokebeach.xml</code></a>
+      </li>
+      <li>
+        <strong>Game Informer</strong> — News<br />
+        <a href="gameinformer.xml"><code>gameinformer.xml</code></a>
+      </li>
+    </ul>
+    <p><small>Base: <code>https://giosiva.github.io/RssFeeder/</code></small></p>
   </body>
 </html>
