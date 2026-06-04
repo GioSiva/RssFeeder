@@ -1,0 +1,60 @@
+[
+  {
+    "id": 100,
+    "date": "2026-06-04T12:00:00",
+    "link": "https://www.pcguia.pt/2026/06/nzxt-aposta-forte/",
+    "title": { "rendered": "NZXT aposta forte na iluminação" },
+    "categories": [26],
+    "_embedded": {
+      "author": [{ "name": "Redação" }],
+      "wp:featuredmedia": [
+        {
+          "source_url": "https://www.pcguia.pt/wp-content/uploads/2026/06/nzxt.jpg"
+        }
+      ],
+      "wp:term": [[{ "taxonomy": "category", "id": 26, "name": "Notícias" }]]
+    }
+  },
+  {
+    "id": 99,
+    "date": "2026-06-03T16:30:26",
+    "link": "https://www.pcguia.pt/2026/06/asus-lanca-fonte-de-alimentacao-de-3000-w-capaz-de-alimentar-quatro-rtx-5090/",
+    "title": {
+      "rendered": "Asus lança fonte de alimentação de 3000 W capaz de alimentar quatro RTX 5090"
+    },
+    "categories": [26],
+    "_embedded": {
+      "author": [{ "name": "João" }],
+      "wp:featuredmedia": [
+        {
+          "source_url": "https://www.pcguia.pt/wp-content/uploads/2026/06/ROG_Thor.jpg"
+        }
+      ],
+      "wp:term": [[{ "taxonomy": "category", "id": 26, "name": "Hardware" }]]
+    }
+  },
+  {
+    "id": 98,
+    "date": "2026-06-03T15:00:00",
+    "link": "https://www.pcguia.pt/2026/06/nvidia-dlss-45/",
+    "title": { "rendered": "Nvidia revela o DLSS 4.5" },
+    "categories": [26],
+    "_embedded": {
+      "author": [{ "name": "Redação" }],
+      "wp:featuredmedia": [],
+      "wp:term": [[{ "taxonomy": "category", "id": 26, "name": "Notícias" }]]
+    }
+  },
+  {
+    "id": 50,
+    "date": "2026-06-04T10:00:00",
+    "link": "https://www.pcguia.pt/2026/06/app-do-dia-exemplo/",
+    "title": { "rendered": "App do Dia – Exemplo" },
+    "categories": [3, 26],
+    "_embedded": {
+      "author": [{ "name": "Redação" }],
+      "wp:featuredmedia": [],
+      "wp:term": [[{ "taxonomy": "category", "id": 3, "name": "Dicas" }]]
+    }
+  }
+]

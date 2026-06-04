@@ -32,6 +32,14 @@ class FeedConfig:
     item_sort: str = "date"
     # Path under site_url where this feed is served (e.g. feed/gameinformer.xml).
     feed_public_path: str = ""
+    # WordPress REST API (optional): when wp_category_id > 0, fetch posts via JSON.
+    wp_category_id: int = 0
+    wp_per_page: int = 100
+    exclude_category_ids: str = ""
+    exclude_link_substrings: str = ""
+    stop_at_link_contains: str = ""
+    section_start_heading: str = ""
+    section_stop_heading: str = ""
     user_agent: str = "RssFeeder/1.0 (+https://github.com/GioSiva/RssFeeder)"
     language: str = "en"
 

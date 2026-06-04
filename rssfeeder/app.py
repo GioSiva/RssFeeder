@@ -48,6 +48,7 @@ def create_app() -> Flask:
                     "pokebeach": f"{_site_base_url()}/feed/pokebeach.xml",
                     "gameinformer": f"{_site_base_url()}/feed/gameinformer.xml",
                     "mushureport": f"{_site_base_url()}/feed/mushureport.xml",
+                    "pcguia": f"{_site_base_url()}/feed/pcguia.xml",
                 },
             }
         )
