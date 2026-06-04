@@ -22,9 +22,22 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## GitHub Pages (sem instalar nada)
+
+Depois de fazer merge para `main` e ativar **GitHub Pages** (Settings → Pages → Source: **GitHub Actions**), o workflow publica o feed automaticamente:
+
+| Recurso | URL |
+|---------|-----|
+| **Feed RSS** | https://giosiva.github.io/RssFeeder/pokebeach.xml |
+| Página inicial | https://giosiva.github.io/RssFeeder/ |
+
+O workflow `.github/workflows/publish-feed.yml` corre **de hora a hora** (e em cada push para `main`). Pode também disparar manualmente em Actions → *Publish RSS to GitHub Pages* → *Run workflow*.
+
+No leitor RSS (Feedly, NetNewsWire, etc.), use o URL do feed acima.
+
 ## Usage
 
-### HTTP server (recommended)
+### HTTP server (local)
 
 ```bash
 python -m rssfeeder

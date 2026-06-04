@@ -32,7 +32,15 @@ python -m unittest discover -s tests -v
 
 No separate linter is configured yet.
 
-### Run / demo
+### GitHub Pages
+
+Production feed URL (after merge to `main` + Pages enabled):
+
+`https://giosiva.github.io/RssFeeder/pokebeach.xml`
+
+Workflow: `.github/workflows/publish-feed.yml` (hourly cron + push to `main`).
+
+### Run / demo (local)
 
 ```bash
 python -m rssfeeder

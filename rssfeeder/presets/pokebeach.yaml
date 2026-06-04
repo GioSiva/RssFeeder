@@ -1,6 +1,6 @@
 id: pokebeach
 title: PokeBeach — TCG News
-site_url: http://127.0.0.1:8080
+site_url: https://giosiva.github.io/RssFeeder
 page_url: https://www.pokebeach.com/
 description: Latest Pokémon TCG news from PokeBeach (scraped from xpress_articleList).
 list_selector: ".xpress_articleList article"
