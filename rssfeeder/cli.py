@@ -25,10 +25,19 @@ def main(argv: list[str] | None = None) -> int:
         default=os.environ.get("RSSFEEDER_SITE_URL", "http://127.0.0.1:8080"),
         help="Base URL embedded in feed metadata",
     )
+    parser.add_argument(
+        "--feed-public-path",
+        default=os.environ.get("RSSFEEDER_FEED_PUBLIC_PATH", ""),
+        help="Public path for this feed under site-url (default: feed/<preset>.xml)",
+    )
     args = parser.parse_args(argv)
 
     try:
-        config = replace(load_preset(args.preset), site_url=args.site_url.rstrip("/"))
+        config = replace(
+            load_preset(args.preset),
+            site_url=args.site_url.rstrip("/"),
+            feed_public_path=args.feed_public_path,
+        )
     except FileNotFoundError:
         print(f"Unknown preset: {args.preset}", file=sys.stderr)
         return 1

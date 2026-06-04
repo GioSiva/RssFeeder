@@ -21,6 +21,7 @@ def build_rss(config: FeedConfig, items: list[FeedItem]) -> str:
     fg = FeedGenerator()
     fg.id(config.feed_url)
     fg.title(config.title)
+    fg.link(href=config.feed_url, rel="self")
     fg.link(href=config.page_url, rel="alternate")
     fg.description(config.description)
     fg.language(config.language)

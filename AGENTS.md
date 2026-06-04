@@ -34,9 +34,13 @@ No separate linter is configured yet.
 
 ### GitHub Pages
 
-Production feed URL (after merge to `main` + Pages enabled):
+Production feed URLs (after merge to `main` + Pages enabled):
 
-`https://giosiva.github.io/RssFeeder/pokebeach.xml`
+- Canonical: `https://giosiva.github.io/RssFeeder/feed/pokebeach.xml` (and `feed/gameinformer.xml`)
+- Legacy copy at repo root: `pokebeach.xml`, `gameinformer.xml` (same content)
+- Index with deploy verification: `https://giosiva.github.io/RssFeeder/`
+
+Many RSS readers re-sort by `pubDate`; Game Informer XML keeps website DOM order but newer News may still appear first in the app.
 
 Workflow: `.github/workflows/publish-feed.yml` (hourly cron + push to `main`).
 

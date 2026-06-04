@@ -39,12 +39,16 @@ jobs:
 
       - name: Generate feeds
         run: |
-          mkdir -p site
+          mkdir -p site/feed
           for preset in pokebeach gameinformer; do
             python -m rssfeeder.cli "${preset}" \
               --site-url "${SITE_URL}" \
-              > "site/${preset}.xml"
+              --feed-public-path "feed/${preset}.xml" \
+              > "site/feed/${preset}.xml"
+            cp "site/feed/${preset}.xml" "site/${preset}.xml"
           done
+          python -m rssfeeder.build_info site/build-info.json \
+            site/feed/pokebeach.xml site/feed/gameinformer.xml
           cp public/index.html site/index.html
           cp public/.nojekyll site/.nojekyll
 

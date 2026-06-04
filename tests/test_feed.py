@@ -1,4 +1,5 @@
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from rssfeeder.config import FeedConfig, load_preset
@@ -38,6 +39,16 @@ class PokebeachFeedTests(unittest.TestCase):
         self.assertIn("<rss", xml)
         self.assertIn("PokeBeach", xml)
         self.assertIn("Hydrapple", xml)
+
+    def test_feed_self_link(self) -> None:
+        config = replace(
+            self.config,
+            feed_public_path="feed/pokebeach.xml",
+        )
+        items = scrape_items(config, html=self.html)
+        xml = build_rss(config, items)
+        self.assertIn('rel="self"', xml)
+        self.assertIn("http://localhost:8080/feed/pokebeach.xml", xml)
 
 
 class GameInformerFeedTests(unittest.TestCase):
