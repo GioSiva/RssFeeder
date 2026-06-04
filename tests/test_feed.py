@@ -49,11 +49,14 @@ class GameInformerFeedTests(unittest.TestCase):
         items = scrape_items(self.config, html=self.html)
         self.assertEqual(len(items), 1)
         item = items[0]
-        self.assertEqual(item.guid, "gi-126684")
-        self.assertIn("Control Resonant", item.title)
-        self.assertTrue(item.link.startswith("https://gameinformer.com/"))
+        self.assertEqual(item.guid, "gi-126676")
+        self.assertIn("Moon Studios", item.title)
+        self.assertTrue(item.link.startswith("https://gameinformer.com/state-of-play/"))
+        self.assertEqual(item.category, "State of Play")
+        self.assertEqual(item.author, "Marcus Stewart")
         self.assertIsNotNone(item.image_url)
         assert item.image_url is not None
+        self.assertIn("teaser_promoted_image_thumbnail_x2", item.image_url)
         self.assertTrue(item.image_url.startswith("https://gameinformer.com/"))
 
 

@@ -1,14 +1,14 @@
 id: gameinformer
-title: Game Informer — News
+title: Game Informer — News & features
 site_url: https://giosiva.github.io/RssFeeder
 page_url: https://gameinformer.com/news
-description: Latest news from Game Informer (scraped from article teasers).
-list_selector: article.node--type-article.node--view-mode-teaser
-item_title_selector: a[rel="bookmark"]
-item_link_selector: a[rel="bookmark"]
-item_author_selector: ""
+description: Articles from the Game Informer news landing page (all sections in region-content).
+list_selector: ".region.region-content article.node--type-article"
+item_title_selector: "h2.page-title a, h3.page-title a"
+item_link_selector: "h2.page-title a[rel=bookmark], h3.page-title a[rel=bookmark]"
+item_author_selector: "a.username"
 item_date_selector: time
 item_date_attribute: datetime
-item_image_selector: .field--name-field-promo-image img
+item_image_selector: ".field--name-field-promo-image"
 item_comments_selector: ""
 language: en

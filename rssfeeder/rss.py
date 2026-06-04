@@ -6,6 +6,17 @@ from rssfeeder.config import FeedConfig
 from rssfeeder.scrape import FeedItem
 
 
+def _mime_for_image(url: str) -> str:
+    lower = url.lower()
+    if lower.endswith(".webp"):
+        return "image/webp"
+    if lower.endswith(".png"):
+        return "image/png"
+    if lower.endswith(".jpg") or lower.endswith(".jpeg"):
+        return "image/jpeg"
+    return "image/*"
+
+
 def build_rss(config: FeedConfig, items: list[FeedItem]) -> str:
     fg = FeedGenerator()
     fg.id(config.feed_url)
@@ -27,8 +38,11 @@ def build_rss(config: FeedConfig, items: list[FeedItem]) -> str:
         if item.author:
             entry.author(name=item.author)
 
+        if item.category:
+            entry.category(term=item.category)
+
         if item.image_url:
-            entry.enclosure(item.image_url, 0, "image/png")
+            entry.enclosure(item.image_url, 0, _mime_for_image(item.image_url))
 
         if item.comments_url:
             entry.comments(item.comments_url)
