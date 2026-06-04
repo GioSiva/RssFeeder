@@ -1,0 +1,13 @@
+id: pokebeach
+title: PokeBeach — TCG News
+site_url: http://127.0.0.1:8080
+page_url: https://www.pokebeach.com/
+description: Latest Pokémon TCG news from PokeBeach (scraped from xpress_articleList).
+list_selector: ".xpress_articleList article"
+item_title_selector: "h2.entry-title a"
+item_link_selector: "h2.entry-title a"
+item_author_selector: "a.article__author"
+item_date_selector: '.entry-meta a[rel="bookmark"]'
+item_image_selector: ".xpress_articleImage--full img"
+item_comments_selector: '.entry-meta a[href*="#comments"]'
+language: en
