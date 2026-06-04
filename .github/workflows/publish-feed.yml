@@ -37,12 +37,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Generate PokeBeach feed
+      - name: Generate feeds
         run: |
           mkdir -p site
-          python -m rssfeeder.cli pokebeach \
-            --site-url "${SITE_URL}" \
-            > site/pokebeach.xml
+          for preset in pokebeach gameinformer; do
+            python -m rssfeeder.cli "${preset}" \
+              --site-url "${SITE_URL}" \
+              > "site/${preset}.xml"
+          done
           cp public/index.html site/index.html
           cp public/.nojekyll site/.nojekyll
 

@@ -1,0 +1,14 @@
+id: gameinformer
+title: Game Informer — News
+site_url: https://giosiva.github.io/RssFeeder
+page_url: https://gameinformer.com/news
+description: Latest news from Game Informer (scraped from article teasers).
+list_selector: article.node--type-article.node--view-mode-teaser
+item_title_selector: a[rel="bookmark"]
+item_link_selector: a[rel="bookmark"]
+item_author_selector: ""
+item_date_selector: time
+item_date_attribute: datetime
+item_image_selector: .field--name-field-promo-image img
+item_comments_selector: ""
+language: en

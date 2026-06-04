@@ -2,7 +2,9 @@
 
 RSS feeds for custom webpages — scrape article lists from HTML and expose them as RSS 2.0.
 
-## PokeBeach preset
+## Presets
+
+### PokeBeach
 
 Reads articles from the [PokeBeach](https://www.pokebeach.com/) homepage inside `.xpress_articleList` (each `<article>` block).
 
@@ -13,6 +15,10 @@ Extracted fields per item:
 - Published date (`.entry-meta a[rel="bookmark"]`)
 - Featured image (`.xpress_articleImage--full img`)
 - Comments link (optional)
+
+### Game Informer
+
+Reads news teasers from [Game Informer News](https://gameinformer.com/news) (`article.node--view-mode-teaser`).
 
 ## Setup
 
@@ -28,7 +34,8 @@ Depois de fazer merge para `main` e ativar **GitHub Pages** (Settings → Pages 
 
 | Recurso | URL |
 |---------|-----|
-| **Feed RSS** | https://giosiva.github.io/RssFeeder/pokebeach.xml |
+| PokeBeach | https://giosiva.github.io/RssFeeder/pokebeach.xml |
+| Game Informer | https://giosiva.github.io/RssFeeder/gameinformer.xml |
 | Página inicial | https://giosiva.github.io/RssFeeder/ |
 
 O workflow `.github/workflows/publish-feed.yml` corre **de hora a hora** (e em cada push para `main`). Pode também disparar manualmente em Actions → *Publish RSS to GitHub Pages* → *Run workflow*.
