@@ -27,6 +27,7 @@ class FeedConfig:
     item_comments_selector: str = '.entry-meta a[href*="#comments"]'
     item_date_attribute: str = ""
     max_pages: int = 1
+    item_sort: str = "date"
     user_agent: str = "RssFeeder/1.0 (+https://github.com/GioSiva/RssFeeder)"
     language: str = "en"
 
