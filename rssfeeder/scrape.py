@@ -282,5 +282,6 @@ def scrape_items(config: FeedConfig, *, html: Optional[str] = None) -> list[Feed
         for url in _listing_urls(config):
             _scrape_page_html(config, _fetch_html(url, config), items, seen)
 
-    items.sort(key=lambda item: item.published, reverse=True)
+    if config.item_sort == "date":
+        items.sort(key=lambda item: item.published, reverse=True)
     return items
