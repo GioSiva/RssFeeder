@@ -28,12 +28,15 @@ class FeedConfig:
     item_date_attribute: str = ""
     max_pages: int = 1
     item_sort: str = "date"
+    # Path under site_url where this feed is served (e.g. feed/gameinformer.xml).
+    feed_public_path: str = ""
     user_agent: str = "RssFeeder/1.0 (+https://github.com/GioSiva/RssFeeder)"
     language: str = "en"
 
     @property
     def feed_url(self) -> str:
-        return f"{self.site_url.rstrip('/')}/feed/{self.id}.xml"
+        path = self.feed_public_path or f"feed/{self.id}.xml"
+        return f"{self.site_url.rstrip('/')}/{path.lstrip('/')}"
 
 
 def load_preset(preset_id: str) -> FeedConfig:

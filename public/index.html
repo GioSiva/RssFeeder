@@ -3,38 +3,198 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RssFeeder</title>
+    <title>RssFeeder — feeds RSS</title>
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="PokeBeach"
+      href="feed/pokebeach.xml"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Game Informer"
+      href="feed/gameinformer.xml"
+    />
     <style>
+      :root {
+        color-scheme: light dark;
+      }
       body {
         font-family: system-ui, sans-serif;
-        max-width: 40rem;
+        max-width: 44rem;
         margin: 2rem auto;
         padding: 0 1rem;
-        line-height: 1.5;
+        line-height: 1.55;
+      }
+      code,
+      pre {
+        background: #f4f4f4;
+        border-radius: 4px;
       }
       code {
-        background: #f4f4f4;
         padding: 0.1em 0.35em;
-        border-radius: 4px;
+      }
+      pre {
+        padding: 0.75rem 1rem;
+        overflow-x: auto;
       }
       li {
         margin: 0.75rem 0;
+      }
+      .ok {
+        color: #0a7a2f;
+      }
+      .warn {
+        color: #9a6700;
+      }
+      #status {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1.25rem 0;
+      }
+      #status.loading {
+        opacity: 0.85;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.35rem 0.5rem;
+        border-bottom: 1px solid #ddd;
+      }
+      details {
+        margin-top: 1rem;
       }
     </style>
   </head>
   <body>
     <h1>RssFeeder</h1>
-    <p>Feeds RSS personalizados. Atualizados de hora a hora via GitHub Actions.</p>
+    <p>
+      Feeds RSS gerados a partir de páginas HTML. Atualização automática de hora a hora
+      (GitHub Actions → GitHub Pages).
+    </p>
+
+    <h2>URLs corretas para o leitor RSS</h2>
+    <p>
+      Use o ficheiro <strong>.xml</strong>, não só a pasta do site. Estes são os links
+      canónicos:
+    </p>
     <ul>
       <li>
         <strong>PokeBeach</strong> — TCG<br />
-        <a href="pokebeach.xml"><code>pokebeach.xml</code></a>
+        <a href="feed/pokebeach.xml"><code>feed/pokebeach.xml</code></a>
+        <br />
+        <small>Legado (igual): <a href="pokebeach.xml"><code>pokebeach.xml</code></a></small>
       </li>
       <li>
-        <strong>Game Informer</strong> — News<br />
-        <a href="gameinformer.xml"><code>gameinformer.xml</code></a>
+        <strong>Game Informer</strong> — News, State of Play, opinion (página 1)<br />
+        <a href="feed/gameinformer.xml"><code>feed/gameinformer.xml</code></a>
+        <br />
+        <small>Legado (igual): <a href="gameinformer.xml"><code>gameinformer.xml</code></a></small>
       </li>
     </ul>
+
+    <div id="status" class="loading" aria-live="polite">
+      A verificar o que está publicado em GitHub Pages…
+    </div>
+
+    <details>
+      <summary>O feed “continua igual” / só vejo News?</summary>
+      <ol>
+        <li>
+          <strong>Cache do leitor:</strong> remova o feed e volte a subscrever, ou use
+          <code>gameinformer.xml?refresh=1</code> (alguns leitores ignoram o parâmetro).
+          O GitHub Pages pode cachear o XML ~10 minutos.
+        </li>
+        <li>
+          <strong>Ordem no site vs. no leitor:</strong> no
+          <a href="https://gameinformer.com/news">gameinformer.com/news</a> os três
+          destaques no topo são <em>News</em>; a seguir vêm State of Play e outras
+          secções. O XML segue essa ordem, mas muitas apps ordenam por
+          <strong>data de publicação</strong> — notícias mais recentes (4 Jun) ficam acima
+          de State of Play (2 Jun).
+        </li>
+        <li>
+          <strong>Secções fora da página 1:</strong> “gamer culture” e outras etiquetas
+          aparecem mais abaixo no site (após “Load more”); este feed inclui só a
+          primeira página (~20 artigos).
+        </li>
+        <li>
+          <strong>Imagens:</strong> as URLs apontam para gameinformer.com; alguns leitores
+          bloqueiam imagens remotas ou hotlink.
+        </li>
+      </ol>
+    </details>
+
     <p><small>Base: <code>https://giosiva.github.io/RssFeeder/</code></small></p>
+
+    <script>
+      const statusEl = document.getElementById("status");
+
+      function escapeHtml(text) {
+        return text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      async function loadBuildInfo() {
+        const res = await fetch("build-info.json", { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("build-info.json indisponível");
+        }
+        return res.json();
+      }
+
+      function renderBuildInfo(data) {
+        const gi = data.feeds.find((f) => f.file === "gameinformer.xml");
+        let html = `<p class="ok"><strong>Deploy verificado</strong> (${escapeHtml(
+          data.generatedAt
+        )} UTC)</p>`;
+
+        if (gi) {
+          const cats = Object.entries(gi.categories)
+            .map(([k, v]) => `${escapeHtml(k)}: ${v}`)
+            .join(", ");
+          html += `<p><strong>${escapeHtml(gi.title)}</strong> — ${gi.itemCount} itens`;
+          if (gi.lastBuildDate) {
+            html += ` · última geração: ${escapeHtml(gi.lastBuildDate)}`;
+          }
+          html += `</p><p>Categorias: ${cats || "—"}</p>`;
+          html += "<p>Primeiros itens no XML (ordem do site):</p><table><thead><tr><th>#</th><th>Título</th><th>Etiqueta</th></tr></thead><tbody>";
+          gi.sampleItems.forEach((row, i) => {
+            html += `<tr><td>${i + 1}</td><td>${escapeHtml(row.title)}</td><td>${escapeHtml(
+              row.category
+            )}</td></tr>`;
+          });
+          html += "</tbody></table>";
+          const hasStateOfPlay = (gi.categories["State of Play"] || 0) > 0;
+          if (hasStateOfPlay) {
+            html +=
+              '<p class="ok">State of Play está no feed publicado. Se o leitor só mostra News, altere a ordenação para “ordem do feed” ou desative ordenação por data.</p>';
+          } else {
+            html +=
+              '<p class="warn">State of Play não aparece neste resumo — o deploy pode estar desatualizado.</p>';
+          }
+        }
+
+        statusEl.classList.remove("loading");
+        statusEl.innerHTML = html;
+      }
+
+      loadBuildInfo().catch(() => {
+        statusEl.classList.remove("loading");
+        statusEl.innerHTML =
+          '<p class="warn">Não foi possível carregar <code>build-info.json</code>. Abra <a href="feed/gameinformer.xml">feed/gameinformer.xml</a> no browser e procure <code>State of Play</code> nas etiquetas <code>&lt;category&gt;</code>.</p>';
+      }).then((data) => {
+        if (data) renderBuildInfo(data);
+      });
+    </script>
   </body>
 </html>

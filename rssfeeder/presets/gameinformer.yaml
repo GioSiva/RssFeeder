@@ -2,7 +2,11 @@ id: gameinformer
 title: Game Informer — News & features
 site_url: https://giosiva.github.io/RssFeeder
 page_url: https://gameinformer.com/news
-description: Articles from Game Informer /news (same order as the website, page 1).
+description: >-
+  Game Informer /news page 1 in website order (not sorted by date).
+  The site highlights three News items at the top; State of Play and other
+  sections follow. Many RSS readers re-sort by publication date, so newer
+  News may appear above State of Play even though the XML matches the site.
 list_selector: ".region.region-content article.node--type-article"
 max_pages: 1
 item_sort: dom
