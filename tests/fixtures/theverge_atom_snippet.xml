@@ -8,6 +8,7 @@
     <published>2026-06-04T12:00:00+00:00</published>
     <author><name>Jane Doe</name></author>
     <category term="Tech" />
+    <summary type="html">Short plain summary without any image tag.</summary>
     <content type="html">
       <![CDATA[<img src="https://platform.theverge.com/wp-content/uploads/test.jpg" /><p>Body</p>]]>
     </content>
