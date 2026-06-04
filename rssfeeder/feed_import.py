@@ -6,6 +6,7 @@ import html
 import re
 from datetime import datetime, timezone
 from typing import Any, Optional
+from urllib.parse import quote, unquote, urlsplit, urlunsplit
 from xml.etree import ElementTree as ET
 
 import requests
@@ -13,10 +14,12 @@ from bs4 import BeautifulSoup
 from dateutil import parser as date_parser
 
 from rssfeeder.config import FeedConfig
-from rssfeeder.scrape import FeedItem, _item_description
+from rssfeeder.scrape import FeedItem, _item_description, _prefer_rss_image_url
 
 _ATOM_NS = {"atom": "http://www.w3.org/2005/Atom"}
 _STRIP_TAGS = re.compile(r"<[^>]+>")
+_BLOGGER_SIZE = re.compile(r"/s\d+(?:-[^/]+)?/", re.I)
+_AD_IMAGE_HOSTS = ("linksynergy.com", "doubleclick.net", "googleads.")
 
 
 def _parse_datetime(raw: str) -> datetime:
@@ -44,16 +47,54 @@ def _normalize_url(raw: str, base_url: str) -> Optional[str]:
     return src
 
 
-def _first_image_from_html(fragment: str, base_url: str) -> Optional[str]:
+def _is_ad_image_url(url: str) -> bool:
+    lower = url.lower()
+    return any(host in lower for host in _AD_IMAGE_HOSTS)
+
+
+def _rss_safe_image_url(url: str) -> str:
+    """Encode path and normalize Blogger CDN URLs for picky RSS readers (Opera, e-ink)."""
+    parts = urlsplit(url)
+    path = quote(unquote(parts.path), safe="/")
+    normalized = urlunsplit((parts.scheme, parts.netloc, path, parts.query, parts.fragment))
+    if "googleusercontent.com" not in normalized:
+        return normalized
+    normalized = _BLOGGER_SIZE.sub("/s1600/", normalized)
+    if normalized.lower().endswith(".webp"):
+        normalized = normalized[:-5] + ".jpg"
+    return normalized
+
+
+def _collect_image_candidates_from_html(fragment: str, base_url: str) -> list[str]:
     if not fragment or "<img" not in fragment:
-        return None
+        return []
     soup = BeautifulSoup(fragment, "lxml")
+    candidates: list[str] = []
+    seen: set[str] = set()
+
+    def add(raw: Optional[str]) -> None:
+        url = _normalize_url(raw or "", base_url)
+        if not url or url in seen or _is_ad_image_url(url):
+            return
+        seen.add(url)
+        candidates.append(url)
+
     for img in soup.select("img[src], img[data-src]"):
         for attr in ("src", "data-src"):
-            url = _normalize_url(img.get(attr, ""), base_url)
-            if url:
-                return url
-    return None
+            add(img.get(attr))
+        parent = img.find_parent("a")
+        if parent is not None:
+            add(parent.get("href"))
+
+    return candidates
+
+
+def _best_image_from_html(fragment: str, base_url: str) -> Optional[str]:
+    candidates = _collect_image_candidates_from_html(fragment, base_url)
+    if not candidates:
+        return None
+    chosen = _prefer_rss_image_url(candidates, base_url)
+    return _rss_safe_image_url(chosen) if chosen else None
 
 
 def _atom_content_html(entry: ET.Element) -> str:
@@ -138,7 +179,7 @@ def _parse_atom_entry(entry: ET.Element, config: FeedConfig) -> Optional[FeedIte
     content_html = _atom_content_html(entry)
 
     guid = _atom_text(entry, "id") or link
-    image_url = _first_image_from_html(content_html, config.page_url)
+    image_url = _best_image_from_html(content_html, config.page_url)
     # Simple <img> + text — Opera GX and most readers ignore <figure> blocks from Atom.
     description_html = _item_description(title, author or None, image_url, category)
 
@@ -173,7 +214,7 @@ def _parse_rss_item(item: ET.Element, config: FeedConfig) -> Optional[FeedItem]:
     category = child_text("category") or None
     guid = child_text("guid") or link
     content_html = child_text("description")
-    image_url = _first_image_from_html(content_html, config.page_url)
+    image_url = _best_image_from_html(content_html, config.page_url)
     description_html = _item_description(title, author, image_url, category)
 
     return FeedItem(

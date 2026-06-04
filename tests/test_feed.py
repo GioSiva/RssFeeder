@@ -251,7 +251,11 @@ class BdNovidadesMangaFeedTests(unittest.TestCase):
         self.assertEqual(item.title, "Teste Novidades Manga")
         self.assertEqual(item.category, "NOVIDADES MANGA")
         self.assertIn("blogger.googleusercontent.com", item.image_url or "")
+        self.assertIn("/s1600/", item.image_url or "")
+        self.assertTrue((item.image_url or "").lower().endswith(".jpg"))
+        self.assertNotIn("(", item.image_url or "")
         self.assertIn('<p><img src="https://blogger.googleusercontent.com', item.description_html)
+        self.assertIn(".jpg", item.description_html)
 
     def test_html_listing_fixture(self) -> None:
         fixture = (
